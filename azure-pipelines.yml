@@ -1,0 +1,39 @@
+trigger:
+  tags:
+    include:
+      - test/yaml
+
+variables:
+- group: SPInfo    # 여기서 AZ_TENANT_ID, AZ_CLIENT_ID, AZ_CLIENT_SECRET, DB_CONN, TEAMS_WEBHOOK, LOGICAPP_URL 정의
+
+pool:
+  name: msp-azure-selfhost
+  demands: 
+    - agent.name -equals msp-azure-selfh
+
+parameters:
+  - name: AssignedTo
+    type: string
+    displayName: '작업자 선택'
+    default: dgoh@cloocus.com
+    values:
+      - dgoh@cloocus.com
+      - yjsohn@cloocus.com
+      - dhchoi@cloocus.com
+      - hbchoi@cloocus.com
+      - knpark@cloocus.com
+
+steps:
+- task: PythonScript@0
+  displayName: 'NSGUpdate 실행'
+  inputs:
+    scriptSource: 'filePath'
+    scriptPath: 'NSGautoupdate.py'
+  env:
+    AZ_TENANT_ID:     $(AZ_TENANT_ID)
+    AZ_CLIENT_ID:     $(AZ_CLIENT_ID)
+    AZ_CLIENT_SECRET: $(AZ_CLIENT_SECRET)
+    DB_CONN:          $(DB_CONN)
+    TEAMS_WEBHOOK:    $(TEAMS_WEBHOOK)
+    LOGICAPP_URL:     $(LOGICAPP_URL)
+    Assigned_To:      ${{ parameters.AssignedTo }}
